@@ -16,33 +16,15 @@ spec:
       labels:
         app: mongoose
     spec:
-      initContainers:
-      - name: init-mongoose
-        image: busybox
-        command:
-        - "sh"
-        - "-c"
-        - |
-          sed -e "s/-name.*$/-name mongooseim@${POD_NAME}.mongoose.${POD_NAMESPACE}.svc.cluster.local/" /mnt/config-map/vm.args > /mnt/config/vm.args
-        volumeMounts:
-        - name: config-map
-          mountPath: /mnt/config-map
-        - name: config
-          mountPath: /mnt/config
-        env:
-        - name: POD_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
-        - name: POD_NAMESPACE
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.namespace
-
       subdomain: mongoose
       containers:
       - name: mongoose
         image: rslota/mongooseim-kube:latest
+        env:
+          - name: MASTER_ORDINAL
+            value: "0"
+          - name: NODE_TYPE
+            value: "name"
         ports:
         - name: epmd
           containerPort: 4369
@@ -55,7 +37,7 @@ spec:
         - name: erlang-dist
           containerPort: 9100
         volumeMounts:
-        - name: config
+        - name: config-map
           mountPath: /member
         # - name: mnesia
         #   mountPath: /var/lib/mongooseim
@@ -63,8 +45,6 @@ spec:
         - name: config-map
           configMap:
             name: mongooseim
-        - name: config
-          emptyDir: {}
   # volumeClaimTemplates:
   # - metadata:
   #     name: mnesia
