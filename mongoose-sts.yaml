@@ -19,7 +19,7 @@ spec:
       subdomain: mongoose
       containers:
       - name: mongoose
-        image: rslota/mongooseim-kube:latest
+        image: mongooseim/mongooseim:PR-2205
         env:
           - name: MASTER_ORDINAL
             value: "0"
