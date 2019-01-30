@@ -44,22 +44,11 @@ spec:
         volumeMounts:
         - name: config-map
           mountPath: /member
-        # - name: mnesia
-        #   mountPath: /var/lib/mongooseim
+        - name: mnesia
+          mountPath: /var/lib/mongooseim
       volumes:
-        - name: config-map
-          configMap:
-            name: mongooseim
-  # volumeClaimTemplates:
-  # - metadata:
-  #     name: mnesia
-  #     annotations:
-  #       volume.beta.kubernetes.io/storage-class: "dynamic-nfs"
-  #   spec:
-  #     accessModes:
-  #       - ReadWriteMany
-  #     resources:
-  #       requests:
-  #         storage: 10Mi
-  #     storageClassName: dynamic-nfs
-
+      - name: config-map
+        configMap:
+          name: mongooseim
+      - name: mnesia
+        emptyDir: {}
