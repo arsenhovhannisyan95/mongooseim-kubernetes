@@ -50,5 +50,11 @@ spec:
       - name: config-map
         configMap:
           name: mongooseim
-      - name: mnesia
-        emptyDir: {}
+  volumeClaimTemplates:
+  - metadata:
+      name: mnesia
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 1Gi
