@@ -36,6 +36,11 @@ spec:
           containerPort: 5280
         - name: erlang-dist
           containerPort: 9100
+        readinessProbe:
+          tcpSocket:
+            port: c2s
+          initialDelaySeconds: 60
+          periodSeconds: 10
         volumeMounts:
         - name: config-map
           mountPath: /member
