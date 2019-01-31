@@ -102,19 +102,152 @@ kubectl apply -f mongoose-sts.yaml
 ```
 
 First, a `mongoose` StatefulSet should appear in the monitoring window,
-followed by its pods.
+followed by its pods. It will take a few minutes for all the
+pods to start and become ready to serve traffic:
 
-When a pod is stuck in `ContainerCreating` state, the first step should be:
+```
+NAME             READY     STATUS    RESTARTS   AGE
+pod/mongoose-0   1/1       Running   0          4m
+pod/mongoose-1   1/1       Running   0          2m
+pod/mongoose-2   1/1       Running   0          1m
+
+NAME                        DESIRED   CURRENT   AGE
+statefulset.apps/mongoose   3         3         4m
+```
+
+If a pod is stuck in `ContainerCreating` state, the first step should be:
 
 ```
 kubectl describe pods
 ```
 
-One reason for that might be forgetting to store the `mongoose-cm.yml`
+One reason for that might be forgetting to define the `mongoose-cm`
 config map prior to starting the StatefulSet.
 
+Once all the pods are up we can check the cluster status:
 
-### Important!
+```
+$ kubectl exec mongoose-0 /usr/lib/mongooseim/bin/mongooseimctl mnesia running_db_nodes
+['mongooseim@mongoose-2.mongoose.default.svc.cluster.local',
+ 'mongooseim@mongoose-1.mongoose.default.svc.cluster.local',
+ 'mongooseim@mongoose-0.mongoose.default.svc.cluster.local']
+```
+
+The above command should return the same list of nodes (possibly in
+different order) no matter whether we exec it on `mongoose-0`,
+`mongoose-1`, or any other member of the cluster.
+
+
+## Expose the XMPP service
+
+There are two basic ways to expose the XMPP service to public internet.
+The first and easiest is using a public IP provided by Google Cloud.
+The second, somewhat more involved and less convenient, but at the same
+time cheaper, is to use public IPs of Kubernetes worker nodes.
+
+
+### Public XMPP IP with a load balancer
+
+The most straightforward way to expose the service is via a load balancer
+of the cloud provider:
+
+```
+kubectl apply -f mongoose-svc-lb.yaml
+```
+
+It will take up to a few minutes to get an IP address from the provider's
+pool of public addresses, but once that's done, we should see it in the monitoring window:
+
+```
+NAME                  TYPE           CLUSTER-IP     EXTERNAL-IP     PORT(S)                                        AGE
+service/kubernetes    ClusterIP      10.43.240.1    <none>          443/TCP                                        2h
+service/mongoose      ClusterIP      None           <none>          4369/TCP,5222/TCP,5269/TCP,5280/TCP,9100/TCP   15m
+service/mongoose-lb   LoadBalancer   10.43.247.53   35.204.210.47   5222:31810/TCP                                 1m
+```
+
+The service should now be reachable from any host with access to the
+internet (including our local machines). A simple test would be running
+telnet and pressing Ctrl-D to send the end of file symbol:
+
+```
+$ telnet 35.204.210.47 5222
+Trying 35.204.210.47...
+Connected to 47.210.204.35.bc.googleusercontent.com.
+Escape character is '^]'.
+<?xml version='1.0'?><stream:stream xmlns='jabber:client'...
+```
+
+Success! Since we're connecting with `telnet`, not an XMPP client, the
+connection dies instantly, but we got the XMPP stream initiation element
+from the server - the service is up, running, and reachable from everywhere.
+
+In case we don't want to use this access method to the service we can tear
+the load balancer down with:
+
+```
+kubectl delete svc mongoose-lb
+```
+
+### Direct access via external worker node IPs
+
+The LoadBalancer is the more convenient, but also the more expensive
+way of publishing a service.
+We can also access our MongooseIM instances by using Kubernetes worker
+nodes' external IP addresses.
+
+In order to do that, we first have to create a NodePort service:
+
+```
+kubectl apply -f mongoose-svc-nodeport.yaml
+```
+
+After a while it should appear in our monitoring window:
+
+```
+NAME                        TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)                                        AGE
+service/kubernetes          ClusterIP   10.43.240.1    <none>        443/TCP                                        3h
+service/mongoose            ClusterIP   None           <none>        4369/TCP,5222/TCP,5269/TCP,5280/TCP,9100/TCP   1h
+service/mongoose-nodeport   NodePort    10.43.253.16   <none>        5222:32709/TCP                                 41s
+```
+
+The last line tells us that the service will be available on port 32709 of
+Kubernetes workers' external interfaces.
+We can find their external addresses (for example) with:
+
+```
+$ kubectl describe nodes | grep ExternalIP
+  ExternalIP:  35.204.145.243
+  ExternalIP:  35.204.114.176
+  ExternalIP:  35.204.144.193
+```
+
+However, unlike with LoadBalancer, using NodePort we have to manually open
+the relevant port (32709 in this case) in the firewall
+(see [Creating a Service of type
+NodePort](https://cloud.google.com/kubernetes-engine/docs/how-to/exposing-apps#creating_a_service_of_type_nodeport)
+for the source of this command):
+
+```sh
+gcloud compute firewall-rules create mongoose-c2s-nodeport --allow tcp:32709
+```
+
+We can now check that the service is available from public internet (e.g.
+our machine) in a similar fashion to testing the LoadBalancer setup
+(run `telnet` and immediately type Ctrl-D):
+
+```
+$ telnet 35.204.114.176 32709
+Trying 35.204.114.176...
+Connected to 176.114.204.35.bc.googleusercontent.com.
+Escape character is '^]'.
+<?xml version='1.0'?><stream:stream xmlns='jabber:client'...
+```
+
+Again, the opening `<stream>` element means we've successfully connected
+to our MongooseIM cluster.
+
+
+## Watch out for the bills
 
 If you're just trying things out
 **remember to delete your cluster to avoid unnecessary costs**
