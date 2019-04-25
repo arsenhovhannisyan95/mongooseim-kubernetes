@@ -19,7 +19,7 @@ spec:
       subdomain: mongoose
       containers:
       - name: mongoose
-        image: mongooseim/mongooseim:kubernetes
+        image: mongooseim/mongooseim:PR-2283
         env:
           - name: MASTER_ORDINAL
             value: "0"
