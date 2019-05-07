@@ -76,11 +76,26 @@ cd mongooseim-kubernetes
 First, we have to store the configuration for MongooseIM pods into Kubernetes' etcd:
 
 ```sh
-kubectl apply -f mongoose-cm.yaml
+kubectl apply -f mongoose-cm-static.yaml
 ```
 
 The config map will not be visible in the monitoring window,
 since we're not monitoring this kind of resource.
+
+Alternatively, if you're not fine with the statically defined config map,
+but have a set of fine tune `vm.args`, `mongooseim.cfg`, or other
+MongooseIM config files in `your-config-directory/`,
+you can dynamically create a config map with:
+
+```sh
+kubectl create configmap mongoose-cm --from-file your-config-directory/
+```
+
+You can display such a config map as YAML with:
+
+```sh
+kubectl get configmap mongoose-cm -o yaml
+```
 
 MongooseIM pods will automatically initiate communication between one
 another and form a cluster, but they require a DNS service for that.
