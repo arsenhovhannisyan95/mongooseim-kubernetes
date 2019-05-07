@@ -41,9 +41,6 @@ spec:
         - name: sys
           mountPath: /rootfs/sys
           readOnly: true
-        - name: docker
-          mountPath: /var/run/docker.sock
-          readOnly: true
         - name: proc
           mountPath: /rootfs/proc
           readOnly: true
