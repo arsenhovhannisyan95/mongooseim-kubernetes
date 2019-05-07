@@ -11,13 +11,10 @@ data:
       env = "$ENV"
     [agent]
       hostname = "$HOSTNAME"
-    [[outputs.influxdb]]
-      urls = ["$MONITOR_HOST"] # required
-      database = "$MONITOR_DATABASE" # required
 
-      timeout = "5s"
-      username = "$MONITOR_USERNAME"
-      password = "$MONITOR_PASSWORD"
+    [[outputs.file]]
+        files = ["stdout"]
+        data_format = "influx"
       
     [[inputs.cpu]]
       percpu = true

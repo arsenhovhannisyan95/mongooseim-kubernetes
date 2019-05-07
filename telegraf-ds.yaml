@@ -37,26 +37,6 @@ spec:
             secretKeyRef:
               name: telegraf
               key: env
-        - name: MONITOR_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: telegraf
-              key: monitor_username
-        - name: MONITOR_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: telegraf
-              key: monitor_password
-        - name: MONITOR_HOST
-          valueFrom:
-            secretKeyRef:
-              name: telegraf
-              key: monitor_host
-        - name: MONITOR_DATABASE
-          valueFrom:
-            secretKeyRef:
-              name: telegraf
-              key: monitor_database
         volumeMounts:
         - name: sys
           mountPath: /rootfs/sys
