@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: mongooseim
+  name: mongoose-cm
   labels:
-    app: mongooseim
+    app: mongoose
 data:
   vm.args: |
     ## Name of the node.

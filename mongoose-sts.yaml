@@ -42,14 +42,14 @@ spec:
           initialDelaySeconds: 60
           periodSeconds: 10
         volumeMounts:
-        - name: config-map
+        - name: mongoose-cm
           mountPath: /member
         - name: mnesia
           mountPath: /var/lib/mongooseim
       volumes:
-      - name: config-map
+      - name: mongoose-cm
         configMap:
-          name: mongooseim
+          name: mongoose-cm
   volumeClaimTemplates:
   - metadata:
       name: mnesia
