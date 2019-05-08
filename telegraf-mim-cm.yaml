@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: telegraf-mim-cm
+  namespace:
+  labels:
+    k8s-app: telegraf
+data:
+  telegraf.conf: |+
+    [global_tags]
+      env = "$ENV"
+    [agent]
+      hostname = "$HOSTNAME"
+
+    [[outputs.file]]
+      files = ["stdout"]
+      data_format = "graphite"
+
+    [[inputs.socket_listener]]
+      service_address = "tcp://:2003"
+      data_format = "graphite"

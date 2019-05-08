@@ -1,0 +1,85 @@
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: mongoose-telegraf
+  namespace:
+  labels:
+    type: statefulset
+spec:
+  serviceName: mongoose
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mongoose
+  template:
+    metadata:
+      labels:
+        app: mongoose
+    spec:
+      subdomain: mongoose
+      containers:
+      - name: mongoose
+        image: mongooseim/mongooseim:PR-2283
+        env:
+          - name: MASTER_ORDINAL
+            value: "0"
+          - name: NODE_TYPE
+            value: "name"
+        ports:
+        - name: epmd
+          containerPort: 4369
+        - name: c2s
+          containerPort: 5222
+        - name: s2s
+          containerPort: 5269
+        - name: bosh
+          containerPort: 5280
+        - name: erlang-dist
+          containerPort: 9100
+        readinessProbe:
+          tcpSocket:
+            port: c2s
+          initialDelaySeconds: 60
+          periodSeconds: 10
+        volumeMounts:
+        - name: mongoose-cm-graphite
+          mountPath: /member
+        - name: mnesia
+          mountPath: /var/lib/mongooseim
+      - name: telegraf
+        image: docker.io/telegraf:1.5.2
+        resources:
+          limits:
+            memory: 500Mi
+          requests:
+            cpu: 400m
+            memory: 500Mi
+        env:
+        - name: HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: ENV
+          valueFrom:
+            secretKeyRef:
+              name: telegraf
+              key: env
+        volumeMounts:
+        - name: telegraf-mim-cm
+          mountPath: /etc/telegraf
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: mongoose-cm-graphite
+        configMap:
+          name: mongoose-cm-graphite
+      - name: telegraf-mim-cm
+        configMap:
+          name: telegraf-mim-cm
+  volumeClaimTemplates:
+  - metadata:
+      name: mnesia
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 1Gi
