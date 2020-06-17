@@ -27,6 +27,13 @@ brew install google-cloud-sdk
 gcloud init
 ```
 
+At this point it might be convenient
+to [set up `kubectl` shell autocompletion][kubectl-autocompletion].
+This will enable easier discovery of all the useful subcommands,
+so let's spend a while on setting it up and then get back to the rest of this tutorial.
+
+[kubectl-autocompletion]: https://kubernetes.io/docs/tasks/tools/install-kubectl/#enabling-shell-autocompletion
+
 Now let's create a cluster in Google Cloud web dashboard:
 GCP -> Kubernetes Engine -> Create cluster. Then:
 
