@@ -259,3 +259,30 @@ to our MongooseIM cluster.
 If you're just trying things out
 **remember to delete your cluster to avoid unnecessary costs**
 after finishing the experiments.
+
+
+## Useful commands
+
+There are some commands which might come in handy at times,
+but do not have a very specific place in the tutorial above.
+
+Run a "one off" command or start a shell in the cluster:
+
+```
+kubectl run busybee -it --rm --restart=Never --image=busybox [-- optional-command-goes-here]
+```
+
+Run the following command to list available k8s clusters:
+
+```
+kubectl config get-contexts
+```
+
+Switching the context can be done using `NAME` from the above listing.
+Specifically, it might be useful to switch from operating a cloud-hosted
+cluster to a local one:
+
+```
+kubectl config use-context CONTEXT-NAME
+kubectl config use-context docker-desktop  # if Docker Desktop with Kubernetes is enabled
+```
