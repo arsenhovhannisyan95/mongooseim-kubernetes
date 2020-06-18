@@ -259,6 +259,8 @@ to our MongooseIM cluster.
 If you're just trying things out
 **remember to delete your cluster to avoid unnecessary costs**
 after finishing the experiments.
+Specifically, remember to delete all persistent volumes in the cloud
+provider dashboard.
 
 
 ## Useful commands
