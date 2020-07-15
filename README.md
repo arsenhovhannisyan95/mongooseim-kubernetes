@@ -76,7 +76,7 @@ This is going to be our monitoring window. We'll input commands in another termi
 If you're reading this in your browser, it's time to clone the repo:
 
 ```sh
-git clone https://github.com/erszcz/mongooseim-kubernetes
+git clone https://github.com/esl/mongooseim-kubernetes
 cd mongooseim-kubernetes
 ```
 
