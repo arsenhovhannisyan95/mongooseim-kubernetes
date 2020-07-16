@@ -31,6 +31,5 @@ spec:
   ports:
   - port: 8443
     targetPort: 8443
-    nodePort: 30001
   selector:
     app: mpush
