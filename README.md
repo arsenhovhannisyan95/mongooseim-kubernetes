@@ -262,7 +262,7 @@ The simplest way to run MPush is to run the following command:
 kubectl apply -f mongoosepush-rs.yaml
 ```
 
-It will expose host's 30001 port and redirect its incoming/outcoming traffic
+It will expose host's 30001 port and redirect its incoming/outgoing traffic
 to application's 8443 port, making it available to handle requests.
 At the time of writing this section, only FCM is supported, as MPush is started
 with APNS disabled.
