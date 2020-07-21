@@ -256,16 +256,16 @@ to our MongooseIM cluster.
 
 ## MongoosePush
 
-The simplest way to run MPush is to run the following command:
+The simplest way to run MPush is to run the following commands:
 
 ```
-kubectl apply -f mongoosepush-rs.yaml
+kubectl create -f mongoosepush-cm.yaml
+kubectl apply -f mongoosepush-svc.yaml
 ```
 
-It will expose the host's 30001 port and redirect its incoming/outgoing traffic
-to the application's 8443 port, making it available to handle requests.
-At the time of writing this section, only FCM is supported, as MPush is started
-with APNS disabled.
+It will create the configmap being used by the service and expose the application's
+8443 port, making it available to handle requests. At the time of writing this section,
+only FCM is supported, as MPush is started with APNS disabled.
 
 
 ## Watch out for the bills
