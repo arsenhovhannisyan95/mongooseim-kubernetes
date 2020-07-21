@@ -260,7 +260,7 @@ The simplest way to run MPush is to run the following commands:
 
 ```
 kubectl create -f mongoosepush-cm.yaml
-kubectl apply -f mongoosepush-svc.yaml
+kubectl apply -f mongoosepush.yaml
 ```
 
 It will create the configmap being used by the service and expose the application's
