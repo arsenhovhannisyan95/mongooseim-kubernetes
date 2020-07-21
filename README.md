@@ -264,9 +264,16 @@ kubectl apply -f mongoosepush.yaml
 ```
 
 It will create the configmap being used by the service and expose the application's
-8443 port, making it available to handle requests. At the time of writing this section,
-only FCM is supported, as MPush is started with APNS disabled.
+8443 port, making it available to handle requests from inside the cluster.
+At the time of writing this section, only FCM is supported, as MPush is started with APNS disabled.
+To be able to communicate with k8s MPush instance from your localhost, you have to set up
+the proxy to the pod with:
 
+```
+kubectl port-forward mongoosepush-<id> 8443
+```
+
+Now it will be accessable via e.g. `curl` on `localhost:8443` port.
 
 ## Watch out for the bills
 
