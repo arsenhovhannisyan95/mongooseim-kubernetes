@@ -76,7 +76,7 @@ This is going to be our monitoring window. We'll input commands in another termi
 If you're reading this in your browser, it's time to clone the repo:
 
 ```sh
-git clone https://github.com/erszcz/mongooseim-kubernetes
+git clone https://github.com/esl/mongooseim-kubernetes
 cd mongooseim-kubernetes
 ```
 
@@ -253,6 +253,27 @@ Escape character is '^]'.
 Again, the opening `<stream>` element means we've successfully connected
 to our MongooseIM cluster.
 
+
+## MongoosePush
+
+The simplest way to run MPush is to run the following commands:
+
+```
+kubectl create -f mongoosepush-cm.yaml
+kubectl apply -f mongoosepush.yaml
+```
+
+It will create the configmap being used by the service and expose the application's
+8443 port, making it available to handle requests from inside the cluster.
+At the time of writing this section, only FCM is supported, as MPush is started with APNS disabled.
+To be able to communicate with k8s MPush instance from your localhost, you have to set up
+the proxy to the pod with:
+
+```
+kubectl port-forward mongoosepush-<id> 8443
+```
+
+Now it will be accessable via e.g. `curl` on `localhost:8443` port.
 
 ## Watch out for the bills
 
