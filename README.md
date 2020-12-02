@@ -1,3 +1,7 @@
+# We have moved!
+
+We have switched from direct use of Kubernetes resource files to [Helm charts](https://github.com/esl/MongooseHelm). The already existing resource files are still kept here for reference. If you want to recover them from the Helm Charts, it can be done using the `helm template` command on the supported Helm repository. You can find more detailed instructions there. This repository will be archived.
+
 # MongooseIM in Kubernetes
 
 This repository contains a [StatefulSet][sts] definition describing a simple yet
