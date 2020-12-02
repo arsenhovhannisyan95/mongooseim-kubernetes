@@ -1,3 +1,7 @@
+# DEPRECATED
+
+This repository is being deprecated in favour of the appropriate [Helm charts](https://github.com/esl/MongooseHelm). If you want to recover the plain kubernetes yaml definitions, it can be done using the `helm template` command on the supported helm repository, where you can find the appropriate information on how to do so.
+
 # MongooseIM in Kubernetes
 
 This repository contains a [StatefulSet][sts] definition describing a simple yet
